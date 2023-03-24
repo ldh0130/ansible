@@ -1,0 +1,8 @@
+[webservers]
+web1
+web2
+
+[mailservers]
+web3
+web4
+

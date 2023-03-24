@@ -1,0 +1,79 @@
+---
+- name: LVM + FS + Mount 작업
+  hosts: lvmservers
+  vars:
+    lvms:
+      - { lvname: lv1, lvsize: 500M }
+      - { lvname: lv2, lvsize: 1G }
+    fs:
+      - { fstype: ext4, dev: /dev/vg1/lv1 }
+      - { fstype: xfs, dev: /dev/vg1/lv2 }
+    mount:
+      - { mountdir: /lv1, device: /dev/vg1/lv1, fstype: ext4 }
+      - { mountdir: /lv2, device: /dev/vg1/lv2, fstype: xfs }
+  tasks:
+    # 1) 파티션 작업
+    # 2) LVM 작업
+    # 3) FS 작업
+    # 4) Mount 작업
+
+    # 1) 파티션 작업
+    # * /dev/sdb1(1G, partition id: 8e), /dev/sdc1(1G, parition id: 8e)
+    # -> parted /dev/sdb
+    - name: 파티션 작업
+      parted:
+        device: "{{ item }}"
+        number: 1
+        flags: [lvm]
+        state: present
+        parted_start: 1MiB
+        part_end: 100%
+      loop:
+        - /dev/sdb
+        - /dev/sdc
+
+
+    # 2) LVM 작업
+    # * PV: /dev/sdb1, /dev/sdc1
+    # * VG: vg1(/dev/sdb1, /dev/sdc1)
+    # * LV: lv1(500M), lv2(1G)
+    # -> pvcreate /dev/sdb1
+    # -> vgcreate vg1 /dev/sdb1 /dev/sdc1
+    # -> lvcreate vg1 -n lv1 -L 500M
+    # -> lvcreate vg1 -n lv2 -L 1G
+    - name: LVM 작업 - VG 작업
+      lvg: 
+        vg: vg1
+        pvs: /dev/sdb1,/dev/sdc1
+
+    - name: LVM 작업 - LV 작업
+      lvol:
+        vg: vg1
+        lv: "{{ item.lvname }}"
+        size: " {{ item.lvsize }}"
+      with_items: "{{ lvms }}"
+        
+
+    # 3) FS 작업
+    # * /dev/vg1/lv1(ext4)
+    # * /dev/vg1/lv2(xfs)
+    # -> mkfs.ext4 /dev/vg1/lv1
+    # -> vkfs.xfs /dev/vg1/lv2
+    - name: FS 작업
+      filesystem:
+        fstype: "{{ item.fstype }}"
+        dev: "{{ item.dev }}"
+        with_items: "{{ fs }}"
+
+    # 4) Mount 작업
+    # * /dev/vg1/lv1 --> /lv1
+    # * /dev/vg1/lv2 --> /lv2
+    # -> mount /dev/vg1/lv1 /lv1
+    # -> /etc/fstab
+    - name: Mount 작업
+      mount: 
+        path: "{{ item.mountdir }}"
+        src: "{{ item.device }}"
+        fstype: "{{ item.fstype }}"
+        state: mounted
+      with_items: "{{ mounts }}"

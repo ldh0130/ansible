@@ -1,0 +1,20 @@
+--- 
+- name: Restore
+  hosts: all
+  tasks: 
+    # postfix 서비스 종료
+    # postfix, dovecot 패키지 삭제
+
+    - name: 서비스 종료 - postfix
+      service:
+        name: postfix
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: 패키지 삭제 - postfix, dovecot
+      yum:
+        name: 
+          - postfix
+          - dovecot
+        state: absent

@@ -1,0 +1,19 @@
+---
+- name: Restore playbook.yml
+  gather_facts: no
+  hosts: all
+  tasks:
+    - name: DB 서비스 종료
+      service:
+        name: mariadb
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+     
+
+    - name: 패키지 삭제 - httpd, mariadb-server
+      yum: 
+        name: 
+          - httpd
+          - mariadb
+        state: absent

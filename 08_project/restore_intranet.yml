@@ -1,0 +1,39 @@
+---
+- name: Restore the intranet.yml
+  hosts: all
+  tasks: 
+    # 1) Close the port with firewalld module - http, https
+    # 2) Stop the service with service module - httpd, firewalld
+    # 3) Remove the file - /var/html/index.html
+    # 4) Remove the packages - httpd, mod_ssl, firewalld
+    - name: Close the port with firewalld module - http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent: no
+        immediate: no
+        state: disabled
+      loop:
+        - http
+        - https
+    - name: Stop the service with service module - httpd, firewalld
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - httpd
+        - firewalld
+
+   - name: Remove the file - /var/www/html/index.html
+     file:
+        path: /var/www/html/index.html
+        state: absent
+        
+   - name: Remove the packages - httpd, mod_ssl, firewalld
+     yum:
+      name:
+        - httpd
+        - mod_ssl
+        - firewalld
+      state: absent
+    ignore_errors: true

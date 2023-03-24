@@ -1,0 +1,46 @@
+#1 방화벽을 닫습니다. http, https
+#2 홈페이지와 방화벽을 중단시킵니다. 
+#3 웹 페이지 파일을 삭제합니다
+#4 패키지를 삭제합니다.
+
+---
+- name: 시작    # 약속했어 시작할떄 시작 적기로
+  hosts: web1.example.com # << 이놈한테 내 명령을 하달할거야
+  tasks: # << 이밑에작업들이 들어가.
+
+    - name: 방화벽 닫을게요      # 뭘 할건지 적어주기
+      firewalld:  # firewalld 모듈을 쓸거야
+        service: "{{ item }}"  # 변수
+        permanent: yes
+        immediate: no
+        state: disabled
+      loop: # 아래것들이 하나씩 item에 들어갈거야
+        - http  # http 서비스
+        - https # https 서비스
+
+    - name: 홈페이지와 방화벽을 중단시킵니다.
+      service: # service 모듈 사용해서 아래 뭔가를 할거야 
+         name:  "{{ item }}"
+         state: stopped
+      loop:
+        - httpd
+        - firewalld
+
+    - name: 웹페이지를 만들때 무슨 파일을 만들어줬어 근데 그거 지울거야
+      file: 
+        path: cat /www/var/html/index.html
+        state: absent
+
+    - name: 패키지를 삭제합니다.
+      yum:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - firewalld
+        - httpd
+        - mod_ssl
+
+      
+ 
+
+

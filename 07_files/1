@@ -1,0 +1,15 @@
+---
+- name: blockinfile moudle
+  hosts: all
+  tasks:
+    - name: Add a block of test to a file.
+      blockinfile:
+        path: /home/devops/users.txt
+        block: |
+          block line
+          3rd line
+          4th line
+          5th line
+          6th line
+          7th line
+        state: present

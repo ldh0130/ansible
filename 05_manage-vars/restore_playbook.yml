@@ -1,0 +1,43 @@
+- name: Restore playbook.yml
+  hosts: web1
+  tasks:
+    # 1) 방화벽 닫기 - httpd
+
+  - name: 1) 방화벽 닫기 - httpd
+    firewalld:
+      service: "{{ item }}"
+      permanent: yes
+      immediate: yes
+      state: disabled
+    loop:
+      - http
+      - https
+
+      # 2) 서비스 내리기 - firewalld, httpd
+  - name: 서비스 내리기
+    service:
+      name: "{{ item }}"
+      state: stopped
+    with_items:
+      - firewalld
+      - httpd
+  # 3) 웹서비스 설정 삭제
+  # * /var/www/html/index.html
+  - name: 웹서비스 설정 삭제
+    file:
+      path: /var/www/html/index.html
+      state: absent
+  # 4) 패키지 삭제 - httpd, firewalld
+  - name: 패키지 삭제 
+    yum:
+      name:
+        - httpd
+        - firewalld
+      state: absent
+  # 5) 팩트 삭제 - /etc/ansible/facts.d/
+  - name: 사용자 정의 팩트 삭제
+    file:
+      path: /etc/ansible/facts.dest
+      state: directory
+
+  

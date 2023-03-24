@@ -1,0 +1,10 @@
+web1
+web2
+web3
+web4
+
+[database_dev]
+ansible1.example.com
+
+[database_prod]
+ansible2.example.com

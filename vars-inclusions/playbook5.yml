@@ -1,0 +1,53 @@
+---
+- name:
+  hosts: ansible4
+  tasks:
+  - name: 1) FS작업 ->  filesystem module
+    filesystem: 
+      fstype: ext4
+      dev: /dev/vg1/lv1
+
+  - name: 2) ansible4 선수작업 /dev/sdb, /dev/sdc
+    parted: 
+      device: "{{ item }}"
+      number: 1
+      state: present
+      flags: [ lvm ]
+      part_end: "100%"
+    with_item:
+      - /dev/sdb
+      - /dev/sdc
+
+  - name: 3) LVM 작업 -> lvg/lvol module
+    lvg:
+      pvs: /dev/sdv1,/dev/sdc1
+      vg: vg1 
+
+  - name: 4) 마운트 작업 - 마운트 폴더 생성 - /mnt/lv1, /mnt/lv2
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - /mnt/lv1
+      - /mnt/lv2
+
+  - name: 4-2) 마운트 작업 - /mnt/lv1
+    mount: 
+      path: /mnt/lv1
+      src: /dev/vg1/lv1
+      fstype: ext4
+      state: mounted
+
+  - name: 4-2) 마운트 작업 - /mnt/lv2
+    mount:
+      path: /mnt/lv2
+      src: /dev/vg1/lv2
+      fstype: xfs
+      state: mounted
+
+
+      
+
+          
+        
+

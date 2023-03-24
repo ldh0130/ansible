@@ -1,0 +1,29 @@
+---
+- name: MAIL 작업
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Include configure_main.yml
+      include:
+        configure_mail.yml
+      when: inventory_hostname in groups['mailservers']
+      # ansible web3 -m debug -a 'var=inventory_hostname'
+      # ansible web3 -m debug -a 'var=groups'
+      # ansible web3 -m debug -a 'var=groups["mailservers"]'
+  
+  handlers:
+    - name: start_postfix
+      service:
+        name: postfix
+        state: started
+
+    - name: start_dovecot
+      service:
+        name: dovecot
+        state: started
+
+    - name: restart_postfix
+      service:
+        name: postfix
+        state: restarted
+  

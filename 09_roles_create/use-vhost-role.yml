@@ -1,0 +1,6 @@
+---
+- name: Virtual Hosting Role
+  hosts: webservers
+
+  roles:
+    - myvhost

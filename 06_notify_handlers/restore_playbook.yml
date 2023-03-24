@@ -1,0 +1,6 @@
+--- 
+- name: Restore playbook.yml
+  hosts:
+  tasks:
+    # 1) DB 서비스 종료 - mariadb
+    # 2) DB 패키지 삭제 - mariadb_server, python3-PyMySQL

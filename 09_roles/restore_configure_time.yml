@@ -1,0 +1,15 @@
+---
+- name: Restore configure_time.yml
+  hosts: all
+  gather_facts: no
+  pre_tasks:
+    - name: Configure timezone - Asia/Seoul
+      timezone:
+        name: Asia/Seoul
+
+  roles:
+    - rhel-system-roles.timesync
+
+
+ 
+  

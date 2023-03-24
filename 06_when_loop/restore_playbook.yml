@@ -1,0 +1,17 @@
+---
+- name: Restore playbook.yml
+  hosts:
+  tasks:
+    - name: Shutdown the DBservice
+      service:
+        name: mariadb
+        state:  stopped
+        enabled: no
+
+
+    - name: Remove thd DB mariadb_packages
+      yum:
+        name: 
+          - mariadb_server
+          - python3_PyMySQL
+        state: absent

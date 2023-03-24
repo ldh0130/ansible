@@ -1,0 +1,12 @@
+---
+- name: /etc/hosts 파일 배포
+  gather_facts: no
+  hosts: all
+  tasks:
+    - name: /etc/hosts 파일 배포하기
+      copy:
+        src: files/hosts
+        dest: /etc/hosts 
+        owner: root
+        group: root
+        mode: '0644'

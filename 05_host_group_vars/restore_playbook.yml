@@ -1,0 +1,12 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  tasks:
+    - name: Remove the packages
+      yum:
+        name:
+          - httpd
+          - mariadb-server
+          - mutt
+          - tree
+        state: absent

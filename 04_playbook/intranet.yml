@@ -1,0 +1,38 @@
+---
+- name: 시작할게요
+  hosts: web1.example.com
+  tasks:
+    - name: 패키지를 설치할게요
+      yum: 
+        name: 
+          - httpd  
+          - mod_ssl 
+          - firewalld
+        state: latest
+
+    - name: 웹 페이지 보여줄 파일을 만들게요
+      copy: 
+        content: "Welcome To My Server\n"
+        dest: /var/www/html/index.html
+
+    - name:  httpd, firewalld 실행할게요
+      service: 
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - httpd
+        - firewalld   
+        
+    - name:  http, https 방화벽 열어주겠다.
+      firewalld:
+        service: "{{ items }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - http
+        - https
+
+        
+

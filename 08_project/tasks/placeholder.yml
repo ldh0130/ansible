@@ -1,0 +1,11 @@
+---
+- name: 파일 생성 - {{ indexfile }}
+  copy:
+    content: "{{ ansible_facts['fqdn'] }} has been customized using Ansible.\n" 
+    dest: "{{ indexfile }}"
+
+- name: 파일 생성 - {{ motdfile }}
+  copy:
+    content: "Welcome To My Server - {{ ansible_facts['hostname']}}"
+    dest: "{{ motdfile }}"
+

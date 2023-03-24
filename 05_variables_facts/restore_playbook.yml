@@ -1,0 +1,7 @@
+# 1) 패키지 삭제 - firewalld, httpd. mod_ssl
+# 2) 웹 서비스 해제
+# 2-1) /etc/httpd/conf/http.conf (files/httpd.conf) 삭제
+# 2-2) /var/www/html/.htaccess (files/.htaccess) 삭제
+# 2-3) /etc/httpd/secrets/htpasswd (files/htpasswd) 삭제
+# * /etc/httpd/secrets/htpasswd (files/htpasswd) 삭제
+
