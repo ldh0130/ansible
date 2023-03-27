@@ -1,0 +1,38 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  tasks:
+    # 1) 방화벽 서비스 내리기 - dns
+    # 2) 서비스 내리기 - firewalld, named
+    # 3) 패키지 삭제
+    # 4) 서비스 설정 파일 삭제 - /var/named/*
+    - name: 방화벽 서비스 내리기
+      firewalld:
+        service:
+        permanent: no
+        immediate: no
+        state: disabled
+
+    - name: 서비스 내리기 - firewalld, named
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      with_items:
+        - firewalld
+        - named
+
+    - name: 패키지 삭제 - firewalld, bind, bind-utils
+      yum:
+        name:
+          - firewalld
+          - bind
+          - bind-utils
+        state: absent
+
+    - name: /var/named 디렉토리 삭제
+      file:
+        name: /var/named
+        state: directory
+
+    
